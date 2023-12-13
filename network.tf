@@ -3,6 +3,8 @@
 #===================================
 resource "aws_vpc" "actions" {
     cidr_block = module.value.vpc_ip
+    enable_dns_support = true
+    enable_dns_hostnames = true
 
     tags = {
         Name = "actions-vpc"
@@ -93,7 +95,7 @@ resource "aws_route_table" "public" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.actions.id
 
-  /* route {
+/*   route {
     cidr_block = module.value.gateway_ip ["nat"]
     gateway_id = aws_nat_gateway.public_a.id
   } */
