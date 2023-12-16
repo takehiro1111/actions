@@ -67,6 +67,5 @@ terraform.rc
 terraform-state
 terraform-state.*
 
-./key/*
-./key/actions.pem
-./key/actions.pub
+actions.pem
+actions.pub
