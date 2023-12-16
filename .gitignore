@@ -66,3 +66,7 @@ terraform.rc
 .idea
 terraform-state
 terraform-state.*
+
+key/*
+key/actions.pem
+key/actions.pub
