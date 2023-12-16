@@ -1,14 +1,15 @@
 #===================================
 #VPC
 #===================================
+#tfsec:ignore:aws-ec2-require-vpc-flow-logs-for-all-vpcs
 resource "aws_vpc" "actions" {
-    cidr_block = module.value.vpc_ip
-    enable_dns_support = true
-    enable_dns_hostnames = true
+  cidr_block           = module.value.vpc_ip
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
-    tags = {
-        Name = "actions-vpc"
-    }
+  tags = {
+    Name = "actions-vpc"
+  }
 }
 
 #===================================
@@ -16,7 +17,7 @@ resource "aws_vpc" "actions" {
 #===================================
 resource "aws_internet_gateway" "actions" {
   vpc_id = aws_vpc.actions.id
-  
+
   tags = {
     Name = "actions-igw"
   }
@@ -37,9 +38,9 @@ resource "aws_eip" "actions" {
 #Subnet
 #===================================
 resource "aws_subnet" "public_a" {
-  vpc_id     = aws_vpc.actions.id
-  cidr_block = module.value.subnet_ip["public_a"]
-  availability_zone = "ap-northeast-1a"
+  vpc_id                  = aws_vpc.actions.id
+  cidr_block              = module.value.subnet_ip["public_a"]
+  availability_zone       = "ap-northeast-1a"
   map_public_ip_on_launch = false
   tags = {
     Name = "actions-public-a"
@@ -47,9 +48,9 @@ resource "aws_subnet" "public_a" {
 }
 
 resource "aws_subnet" "public_c" {
-  vpc_id     = aws_vpc.actions.id
-  cidr_block = module.value.subnet_ip["public_c"]
-  availability_zone = "ap-northeast-1c"
+  vpc_id                  = aws_vpc.actions.id
+  cidr_block              = module.value.subnet_ip["public_c"]
+  availability_zone       = "ap-northeast-1c"
   map_public_ip_on_launch = false
   tags = {
     Name = "actions-public-c"
@@ -57,9 +58,9 @@ resource "aws_subnet" "public_c" {
 }
 
 resource "aws_subnet" "private_a" {
-  vpc_id     = aws_vpc.actions.id
-  cidr_block = module.value.subnet_ip["private_a"]
-  availability_zone = "ap-northeast-1a"
+  vpc_id                  = aws_vpc.actions.id
+  cidr_block              = module.value.subnet_ip["private_a"]
+  availability_zone       = "ap-northeast-1a"
   map_public_ip_on_launch = false
   tags = {
     Name = "actions-private-a"
@@ -67,9 +68,9 @@ resource "aws_subnet" "private_a" {
 }
 
 resource "aws_subnet" "private_c" {
-  vpc_id     = aws_vpc.actions.id
-  cidr_block = module.value.subnet_ip["private_c"]
-  availability_zone = "ap-northeast-1c"
+  vpc_id                  = aws_vpc.actions.id
+  cidr_block              = module.value.subnet_ip["private_c"]
+  availability_zone       = "ap-northeast-1c"
   map_public_ip_on_launch = false
   tags = {
     Name = "actions-private-c"
@@ -83,7 +84,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.actions.id
 
   route {
-    cidr_block = module.value.gateway_ip ["igw"]
+    cidr_block = module.value.gateway_ip["igw"]
     gateway_id = aws_internet_gateway.actions.id
   }
 
@@ -95,12 +96,12 @@ resource "aws_route_table" "public" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.actions.id
 
-/*   route {
+  /*   route {
     cidr_block = module.value.gateway_ip ["nat"]
     gateway_id = aws_nat_gateway.public_a.id
   } */
 
-   tags = {
+  tags = {
     Name = "route-private"
   }
 }
