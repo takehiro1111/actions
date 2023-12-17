@@ -192,3 +192,47 @@ resource "aws_vpc_security_group_egress_rule" "link_egress" {
     Name = "out-link-all"
   }
 }
+
+#=========================================
+# IAM
+#=========================================
+#IAM Role---------------------------------
+resource "aws_iam_role" "eventbridge_role" {
+  name = "eventbridge_ec2_stop_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "events.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "eventbridge_policy" {
+  name = "eventbridge_ec2_stop_policy"
+  description = "Policy to allow EventBridge to stop EC2 instances"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ec2:StopInstances"
+        ],
+        Effect = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "eventbridge_policy_attachment" {
+  role       = aws_iam_role.eventbridge_role.name
+  policy_arn = aws_iam_policy.eventbridge_policy.arn
+}
