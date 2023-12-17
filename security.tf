@@ -215,7 +215,7 @@ resource "aws_iam_role" "eventbridge_role" {
 }
 
 resource "aws_iam_policy" "eventbridge_policy" {
-  name = "eventbridge_ec2_stop_policy"
+  name        = "eventbridge_ec2_stop_policy"
   description = "Policy to allow EventBridge to stop EC2 instances"
 
   policy = jsonencode({
@@ -225,7 +225,7 @@ resource "aws_iam_policy" "eventbridge_policy" {
         Action = [
           "ec2:StopInstances"
         ],
-        Effect = "Allow",
+        Effect   = "Allow",
         Resource = "*"
       }
     ]
