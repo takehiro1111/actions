@@ -66,6 +66,8 @@ terraform.rc
 .idea
 terraform-state
 terraform-state.*
-
+.terraform-state.*
 actions.pem
 actions.pub
+backend
+.terraform.*

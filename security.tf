@@ -223,10 +223,12 @@ resource "aws_iam_policy" "eventbridge_policy" {
     Statement = [
       {
         Action = [
-          "ec2:StopInstances"
+           "ec2:RebootInstances",
+           "ec2:StopInstances",
+           "ec2:TerminateInstances"
         ],
         Effect   = "Allow",
-        Resource = "*"
+        Resource = "${module.public_instance_1.ec2_arn}"
       }
     ]
   })
