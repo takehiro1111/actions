@@ -4,7 +4,7 @@
 #Auto Stop EC2 on Public  ----
 resource "aws_cloudwatch_event_rule" "auto_stop_ec2_public" {
   state               = "ENABLED"
-  schedule_expression = "cron(0 16 * * ? *)"
+  schedule_expression = "cron(0 17-19 * * ? *)"
   name                = "ec2-public-autostop"
   tags = {
     Name = "autostop-ec2"
