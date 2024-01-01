@@ -2,113 +2,12 @@
 # Security Group
 #=========================================
 #ALB--------------------------------------
-resource "aws_security_group" "alb" {
-  name        = "alb_actions"
-  description = "alb for publicaccess"
+module "sg_iaas" {
+  source      = "./modules/sg/iaas"
   vpc_id      = aws_vpc.actions.id
-
-  tags = {
-    Name = "sg-actions-alb"
-  }
+  name_alb = "alb"
+  name_ec2 = "ec2-pub"
 }
-
-resource "aws_vpc_security_group_ingress_rule" "alb_80" {
-  security_group_id = aws_security_group.alb.id
-  description       = "rule of alb-80 ingress"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
-
-  tags = {
-    Name = "in-alb-80"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "alb_443" {
-  security_group_id = aws_security_group.alb.id
-  description       = "rule of alb-443 ingress"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
-
-  tags = {
-    Name = "in-alb-443"
-  }
-}
-
-resource "aws_vpc_security_group_egress_rule" "alb_egress" {
-  security_group_id = aws_security_group.alb.id
-  description       = "rule of alb egress"
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "all"
-
-  tags = {
-    Name = "out-alb-all"
-  }
-}
-#EC2 on public--------------------------------------
-resource "aws_security_group" "ec2_public" {
-  name        = "public-ec2"
-  description = "EC2 Instance publicaccess"
-  vpc_id      = aws_vpc.actions.id
-
-  tags = {
-    Name = "sg-actions-ec2-public"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "ec2_22" {
-  security_group_id = aws_security_group.ec2_public.id
-  description       = "rule of ec2-22 ingress"
-  cidr_ipv4         = local.my_ip
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "tcp"
-
-  tags = {
-    Name = "in-ec2-public-22"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "ec2_80" {
-  security_group_id = aws_security_group.ec2_public.id
-  description       = "rule of ec2-80 ingress"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  to_port           = 80
-  ip_protocol       = "tcp"
-
-  tags = {
-    Name = "in-ec2-public-80"
-  }
-}
-
-resource "aws_vpc_security_group_ingress_rule" "ec2_443" {
-  security_group_id = aws_security_group.ec2_public.id
-  description       = "rule of ec2-443 ingress"
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
-
-  tags = {
-    Name = "in-ec2-public-443"
-  }
-}
-
-resource "aws_vpc_security_group_egress_rule" "ec2_egress" {
-  security_group_id = aws_security_group.ec2_public.id
-  description       = "rule of alb egress"
-  cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "all"
-
-  tags = {
-    Name = "out-alb-all"
-  }
-}
-
 
 #ECS--------------------------------------
 resource "aws_security_group" "ecs" {
@@ -124,7 +23,7 @@ resource "aws_security_group" "ecs" {
 resource "aws_vpc_security_group_ingress_rule" "ecs_8070" {
   security_group_id            = aws_security_group.ecs.id
   description                  = "rule of ecs-8070 ingress"
-  referenced_security_group_id = aws_security_group.alb.id
+  referenced_security_group_id = module.sg_iaas.sg_alb
   from_port                    = 8070
   to_port                      = 8070
   ip_protocol                  = "tcp"
@@ -137,7 +36,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_8070" {
 resource "aws_vpc_security_group_ingress_rule" "ecs_8080" {
   security_group_id            = aws_security_group.ecs.id
   description                  = "rule of ecs-8080 ingress"
-  referenced_security_group_id = aws_security_group.alb.id
+  referenced_security_group_id = module.sg_iaas.sg_alb
   from_port                    = 8080
   to_port                      = 8080
   ip_protocol                  = "tcp"
@@ -223,9 +122,9 @@ resource "aws_iam_policy" "eventbridge_policy" {
     Statement = [
       {
         Action = [
-           "ec2:RebootInstances",
-           "ec2:StopInstances",
-           "ec2:TerminateInstances"
+          "ec2:RebootInstances",
+          "ec2:StopInstances",
+          "ec2:TerminateInstances"
         ],
         Effect   = "Allow",
         Resource = "${module.public_instance_1.ec2_arn}"
