@@ -37,3 +37,8 @@ variable "vpc_id" {
     type = string
     default = null
 }
+
+variable "create_instance" {
+    type = bool
+    default = false
+}

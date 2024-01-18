@@ -96,44 +96,57 @@ resource "aws_vpc_security_group_egress_rule" "link_egress" {
 # IAM
 #=========================================
 #IAM Role---------------------------------
-resource "aws_iam_role" "eventbridge_role" {
-  name = "eventbridge_ec2_stop_role"
+# resource "aws_iam_role" "eventbridge_role" {
+#   name = "eventbridge_ec2_stop_role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Principal = {
-          Service = "events.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Effect = "Allow",
+#         Principal = {
+#           Service = "events.amazonaws.com"
+#         },
+#         Action = "sts:AssumeRole"
+#       }
+#     ]
+#   })
+# }
 
-resource "aws_iam_policy" "eventbridge_policy" {
-  name        = "eventbridge_ec2_stop_policy"
-  description = "Policy to allow EventBridge to stop EC2 instances"
+# resource "aws_iam_policy" "eventbridge_policy" {
+#   name        = "eventbridge_ec2_stop_policy"
+#   description = "Policy to allow EventBridge to stop EC2 instances"
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "ec2:RebootInstances",
-          "ec2:StopInstances",
-          "ec2:TerminateInstances"
-        ],
-        Effect   = "Allow",
-        Resource = "${module.public_instance_1.ec2_arn}"
-      }
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Action = [
+#           "ec2:RebootInstances",
+#           "ec2:StopInstances",
+#           "ec2:TerminateInstances"
+#         ],
+#         Effect   = "Allow",
+#         Resource = "${module.public_instance_1.ec2_arn}"
+#       }
+#     ]
+#   })
+# }
 
-resource "aws_iam_role_policy_attachment" "eventbridge_policy_attachment" {
-  role       = aws_iam_role.eventbridge_role.name
-  policy_arn = aws_iam_policy.eventbridge_policy.arn
+# resource "aws_iam_role_policy_attachment" "eventbridge_policy_attachment" {
+#   role       = aws_iam_role.eventbridge_role.name
+#   policy_arn = aws_iam_policy.eventbridge_policy.arn
+# }
+
+#-----------------
+#IAMユーザー
+#-----------------
+resource "aws_iam_user" "name" {
+  for_each = toset(var.iam_user)
+  name = each.value
+  path = "/system/"
+
+  tags = {
+    tag-key = each.key
+  }
 }

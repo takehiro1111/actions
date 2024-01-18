@@ -2,6 +2,7 @@
 #EC2 Instance
 #===================================
 resource "aws_instance" "public_instance_1" {
+  count = var.create_instance ?  1 : 0
   ami = "ami-0dafcef159a1fc745" // Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type
   subnet_id = var.subnet_id
   instance_type = "t2.micro"
