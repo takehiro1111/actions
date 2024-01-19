@@ -92,6 +92,68 @@ resource "aws_vpc_security_group_egress_rule" "link_egress" {
   }
 }
 
+#EC2 on public------------------------
+#ECS--------------------------------------
+resource "aws_security_group" "ec2" {
+  name        = "ec2_public"
+  description = "ec2"
+  vpc_id      = aws_vpc.actions.id
+
+  tags = {
+    Name = "sg-actions-ec2"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ec2_22" {
+  security_group_id            = aws_security_group.ec2.id
+  description                  = "rule of ec2-22 ingress"
+  cidr_ipv4   = local.my_ip
+  from_port                    = 22
+  to_port                      = 22
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "in-ec2-22"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ec2_80" {
+  security_group_id            = aws_security_group.ec2.id
+  description                  = "rule of ec2-80 ingress"
+  cidr_ipv4   =local.my_ip
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "in-ec2-80"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "ec2_443" {
+  security_group_id            = aws_security_group.ec2.id
+  description                  = "rule of ecs-8080 ingress"
+  cidr_ipv4   = "${chomp(data.http.myip.body)}/32"
+  from_port                    = 443
+  to_port                      = 443
+  ip_protocol                  = "tcp"
+
+  tags = {
+    Name = "in-ec2-443"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "ec2_egress" {
+  security_group_id = aws_security_group.ec2.id
+  description       = "rule of ecs egress"
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "all"
+
+  tags = {
+    Name = "out-ec2-all"
+  }
+}
+
 #=========================================
 # IAM
 #=========================================

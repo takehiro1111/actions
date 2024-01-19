@@ -11,7 +11,7 @@ terraform {
 
     http = {
       source  = "hashicorp/http"
-      version = "3.4.0"
+      version = "3.4.1"
     }
   }
   // S3バケット未作成のため、一旦localで対応。
@@ -52,6 +52,6 @@ module "value" {
 #===================================
 data "aws_caller_identity" "current" {}
 
-data "http" "ifconfig" {
-  url = "http://ipv4.icanhazip.com/"
+data "http" "myip" {
+  url = "http://ifconfig.me/"
 } 
